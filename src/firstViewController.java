@@ -1,3 +1,4 @@
+import com.mysql.cj.protocol.Resultset;
 import javafx.application.Platform;
 import javafx.beans.binding.IntegerBinding;
 import javafx.beans.property.ObjectProperty;
@@ -15,11 +16,10 @@ import javafx.stage.Stage;
 
 
 import javax.swing.*;
+import javax.swing.plaf.nimbus.State;
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Random;
 import java.util.ResourceBundle;
 
@@ -27,6 +27,8 @@ public class firstViewController implements Initializable {
 
     @FXML
     private TextField nameTextField,ageTextField,addressTextField,salaryTextField;
+
+    String queryy = "CREATE TABLE IF NOT EXISTS testt.persons_new(`id` INT(10) NOT NULL AUTO_INCREMENT,`first_name` VARCHAR(45) NULL ,`address` VARCHAR(45) NULL,`age` INT(10) NULL,`salary` INT(20) NULL, PRIMARY KEY (`id`));";
 
 
 
@@ -37,9 +39,12 @@ public class firstViewController implements Initializable {
         String address = addressTextField.getText();
         Person person = new Person(name,age,address,salary);
 
-        try(Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/new_database_for_assigment?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", "root", "root")){
+        try(Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/testt?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", "root", "root")){
+
+
             Statement st = connection.createStatement();
-            st.execute("INSERT INTO PERSON (first_name,address,age,salary) VALUES ('"+person.getName()+"', '"+person.getAddress()+"', '"+person.getAge()+"', "+person.getSalary()+")");
+
+            st.execute("INSERT INTO persons_new (first_name,address,age,salary) VALUES ('"+person.getName()+"', '"+person.getAddress()+"', '"+person.getAge()+"', "+person.getSalary()+")");
         }catch (Exception e ){
             System.out.println(e);
 
@@ -55,6 +60,24 @@ public class firstViewController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
+
+        try(Connection connection = DriverManager.getConnection("jdbc:mysql://localhost?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", "root", "root")){
+            String query = "CREATE DATABASE IF NOT EXISTS TESTT ;";
+            String query2 = queryy;
+
+            Statement statement = connection.createStatement();
+            statement.execute(query);
+            statement.execute(query2);
+        }catch (Exception e ){
+            System.out.println(e);
+
+        }
+        setPersonsDatabase();
+
+
+
+
 
 
     }
@@ -85,8 +108,41 @@ public class firstViewController implements Initializable {
         window.show();
     }
 
+    public void setPersonsDatabase() {
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/testt?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", "root", "root")) {
+
+            Statement statement = connection.createStatement();
+            Statement stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * from persons_new");
+
+
+            if (rs.next() == false) {
+
+                Statement st = connection.createStatement();
+                st.executeUpdate("INSERT INTO persons_new (first_name,address,age,salary) " +
+                        "VALUES ('Jack', 'Doe', 12, 0 )");
+                st.executeUpdate("INSERT INTO persons_new (first_name,address,age,salary) " +
+                        "VALUES ('Johnnie', 'Doe', 21, 12000 )");
+                st.executeUpdate("INSERT INTO persons_new (first_name,address,age,salary) " +
+                        "VALUES ('Jim', 'Doe', 18, 6000 )");
+                st.executeUpdate("INSERT INTO persons_new (first_name,address,age,salary) " +
+                        "VALUES ('Jameson', 'Doe', 40, 15000 )");
+            }else{
+                System.out.println("Database already populated");
+            }
+
+        } catch (Exception e) {
+            System.err.println("Got an exception! ");
+            System.err.println(e.getMessage());
+        }
+
+    }
 
 
 
 
-}
+
+
+
+
+    }
