@@ -11,6 +11,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
@@ -27,6 +28,8 @@ public class firstViewController implements Initializable {
 
     @FXML
     private TextField nameTextField,ageTextField,addressTextField,salaryTextField;
+    @FXML
+    private TableView<Person> personTableView ;
 
     String queryy = "CREATE TABLE IF NOT EXISTS testt.persons_new(`id` INT(10) NOT NULL AUTO_INCREMENT,`first_name` VARCHAR(45) NULL ,`address` VARCHAR(45) NULL,`age` INT(10) NULL,`salary` INT(20) NULL, PRIMARY KEY (`id`));";
 
@@ -96,6 +99,13 @@ public class firstViewController implements Initializable {
         Platform.exit();
 
     }
+
+
+
+
+
+
+
 
     public void employeesButtonPressed(ActionEvent event) throws IOException {
         Parent secondSceneLoader = FXMLLoader.load(getClass().getResource("secondViewTable.fxml"));

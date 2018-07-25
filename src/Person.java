@@ -1,3 +1,5 @@
+import com.mysql.cj.result.IntegerValueFactory;
+
 public class Person {
 
 
@@ -5,10 +7,8 @@ public class Person {
     private String address;
     private Integer age;
     private Integer salary;
-//    private String name;
-//    private int age;
-//    private String address;
-//    private int salary;
+    private Integer ident;
+
 
     public Person(String name, Integer age, String address, Integer salary){
 
@@ -27,6 +27,26 @@ public class Person {
 
 
 
+    }
+
+
+
+    public Person(int idNum, String first_name, String address, int age, int salary) {
+        this.ident = idNum;
+        this.name = first_name;
+        this.address = address;
+        this.age = age;
+        this.salary = salary;
+    }
+
+
+
+    public Integer getIdent() {
+        return ident;
+    }
+
+    public void setIdent(Integer ident) {
+        this.ident = ident;
     }
 
 

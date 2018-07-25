@@ -53,10 +53,11 @@
       </HBox>
       <TableView fx:id="tableView" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="1">
         <columns>
-          <TableColumn fx:id="firstNameColumn" prefWidth="147.0" text="Name" />
-          <TableColumn fx:id="ageColumn" prefWidth="133.0" text="Age" />
-            <TableColumn fx:id="addressColumn" prefWidth="172.0" text="Address" />
-            <TableColumn fx:id="salaryColumn" prefWidth="147.0" text="Salary" />
+            <TableColumn fx:id="idNumber" prefWidth="75.0" text="ID Number" />
+          <TableColumn fx:id="firstNameColumn" prefWidth="108.0" text="Name" />
+            <TableColumn fx:id="addressColumn" prefWidth="161.0" text="Address" />
+          <TableColumn fx:id="ageColumn" prefWidth="116.0" text="Age" />
+            <TableColumn fx:id="salaryColumn" prefWidth="136.0" text="Salary" />
         </columns>
       </TableView>
       <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="2">
