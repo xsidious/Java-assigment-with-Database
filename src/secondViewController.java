@@ -11,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
 
 import javax.management.Query;
@@ -33,7 +34,7 @@ public class secondViewController implements Initializable {
     @FXML private TableColumn<Person, String> addressColumn;
     @FXML private TableColumn<Person, String> ageColumn;
     @FXML private TableColumn<Person, String> salaryColumn;
-
+    @FXML private TableColumn<Person, String > idNumColumn;
     private ObservableList<Person> Persons;
     private Person newPerson;
     private String firstName,address;
@@ -48,7 +49,7 @@ public class secondViewController implements Initializable {
         addressColumn.setCellValueFactory(new PropertyValueFactory<Person, String>("address"));
         ageColumn.setCellValueFactory(new PropertyValueFactory<Person, String>("age"));
         salaryColumn.setCellValueFactory(new PropertyValueFactory<Person, String>("salary"));
-
+        idNumColumn.setCellValueFactory(new PropertyValueFactory<Person,String>("idNumber"));
         tableView.setItems(getPersons());
 
 
@@ -81,7 +82,7 @@ public class secondViewController implements Initializable {
 
             ResultSet rs = st.executeQuery("SELECT * FROM testt.persons_new;" );
             while (rs.next()) {
-                Person prs = new Person(rs.getString("first_name"),rs.getString("address"),rs.getInt("age"),rs.getInt("salary"));
+                Person prs = new Person(rs.getInt("id"),rs.getString("first_name"),rs.getString("address"),rs.getInt("age"),rs.getInt("salary"));
                 persons.add(prs);
             }
 
@@ -123,6 +124,45 @@ public class secondViewController implements Initializable {
         window.show();
     }
 
+//    public void  selectedPersonEdit() throws IOException {
+//        Integer id = tableView.getSelectionModel().getSelectedItem().getIdNumber();
+//        System.out.println(id);
+//
+//
+//    }
+
+
+//    public void loadSceneThree() throws IOException {
+//
+//        Parent secondSceneLoader = FXMLLoader.load(getClass().getResource("editView.fxml"));
+//        Scene secondScene = new Scene(secondSceneLoader);
+//        // secondScene.getStylesheets().add("JavaFX/style.css");
+//        //this part gets the stage information
+//
+//        Stage window = new Stage();
+//        window.setScene(secondScene);
+//        window.show();
+//    }
+
+    public void editButtonPushed(ActionEvent event) throws IOException {
+        Integer id = tableView.getSelectionModel().getSelectedItem().getIdNumber();
+
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("editView.fxml"));
+
+        Parent secondSceneLoader = loader.load();
+        Scene secondScene = new Scene(secondSceneLoader);
+
+        editViewController editViewControllero = loader.getController();
+        editViewControllero.getID(id);
+
+        //this part gets the stage information
+
+        Stage window = new Stage();
+        window.setScene(secondScene);
+        window.show();
+
+    }
 
 
 

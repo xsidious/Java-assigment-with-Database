@@ -5,6 +5,16 @@ public class Person {
     private String address;
     private Integer age;
     private Integer salary;
+
+    public Integer getIdNumber() {
+        return idNumber;
+    }
+
+    public void setIdNumber(Integer idNumber) {
+        this.idNumber = idNumber;
+    }
+
+    private Integer idNumber;
 //    private String name;
 //    private int age;
 //    private String address;
@@ -27,6 +37,14 @@ public class Person {
 
 
 
+    }
+
+    public Person(int idNumber, String first_name, String address, int age, int salary) {
+        this.idNumber = idNumber;
+        this.name = first_name;
+        this.address = address;
+        this.age = age;
+        this.salary = salary;
     }
 
 
@@ -64,7 +82,7 @@ public class Person {
 
     @Override
     public String toString() {
-        return  name+" "+age+" "+address +" "+ salary;
+        return idNumber +" "+ name +" "+ age +" "+ address +" "+ salary;
     }
 
 
