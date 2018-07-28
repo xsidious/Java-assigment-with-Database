@@ -1,3 +1,5 @@
+
+
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -10,6 +12,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
@@ -22,6 +25,10 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ResourceBundle;
+import java.util.concurrent.LinkedBlockingDeque;
+
+import javafx.scene.control.Alert;
+
 
 import static javax.swing.text.html.HTML.Tag.SELECT;
 
@@ -35,6 +42,8 @@ public class secondViewController implements Initializable {
     @FXML private TableColumn<Person, String> ageColumn;
     @FXML private TableColumn<Person, String> salaryColumn;
     @FXML private TableColumn<Person, String > idNumColumn;
+    @FXML private TextField searchDatabase;
+
     private ObservableList<Person> Persons;
     private Person newPerson;
     private String firstName,address;
@@ -116,7 +125,7 @@ public class secondViewController implements Initializable {
     public void addNewButtonPressed(ActionEvent event) throws IOException {
         Parent firstSceneLoader = FXMLLoader.load(getClass().getResource("firstViewCollectInfo.fxml"));
         Scene firstScene = new Scene(firstSceneLoader);
-       // secondScene.getStylesheets().add("JavaFX/style.css");
+        // secondScene.getStylesheets().add("JavaFX/style.css");
         //this part gets the stage information
 
         Stage window = (Stage) ((Node)event.getSource()).getScene().getWindow();
@@ -132,17 +141,45 @@ public class secondViewController implements Initializable {
 //    }
 
 
-//    public void loadSceneThree() throws IOException {
-//
-//        Parent secondSceneLoader = FXMLLoader.load(getClass().getResource("editView.fxml"));
-//        Scene secondScene = new Scene(secondSceneLoader);
-//        // secondScene.getStylesheets().add("JavaFX/style.css");
-//        //this part gets the stage information
-//
-//        Stage window = new Stage();
-//        window.setScene(secondScene);
-//        window.show();
-//    }
+    public void searchDatabase(){
+
+        ObservableList<Person> persons = FXCollections.observableArrayList();
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/testt?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", "root", "root")){
+            String searchTerm = searchDatabase.getText();
+
+
+            Statement stmt = connection.createStatement();
+
+            if (searchTerm.equals("")){
+                ResultSet rs = stmt.executeQuery("SELECT * FROM persons_new");
+                while (rs.next()) {
+                    Person prs = new Person(rs.getInt("id"),rs.getString("first_name"),rs.getString("address"),rs.getInt("age"),rs.getInt("salary"));
+
+                    persons.add(prs);
+                }
+            } else {
+
+                ResultSet rs = stmt.executeQuery("SELECT * FROM persons_new WHERE first_name = '"+searchTerm+"' OR address = '"+searchTerm+"' ");
+                while (rs.next()) {
+                    Person prs = new Person(rs.getInt("id"),rs.getString("first_name"),rs.getString("address"),rs.getInt("age"),rs.getInt("salary"));
+
+                    persons.add(prs);
+                }
+
+
+            }
+
+
+        } catch (Exception e ){
+            System.out.println(e);
+
+        }
+        tableView.setItems(persons);
+        searchDatabase.setText("");
+
+
+
+    }
 
     public void editButtonPushed(ActionEvent event) throws IOException {
         Integer id = tableView.getSelectionModel().getSelectedItem().getIdNumber();
@@ -158,11 +195,141 @@ public class secondViewController implements Initializable {
 
         //this part gets the stage information
 
-        Stage window = new Stage();
+        Stage window = (Stage) ((Node)event.getSource()).getScene().getWindow();
         window.setScene(secondScene);
         window.show();
 
     }
+
+
+    public void detailedViewButtonPressed(ActionEvent event) throws IOException {
+        Integer id = tableView.getSelectionModel().getSelectedItem().getIdNumber();
+        String name = tableView.getSelectionModel().getSelectedItem().getName();
+        String address = tableView.getSelectionModel().getSelectedItem().getAddress();
+        Integer age = tableView.getSelectionModel().getSelectedItem().getAge();
+        Integer salary = tableView.getSelectionModel().getSelectedItem().getSalary();
+
+
+
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("detailedView.fxml"));
+
+        Parent secondSceneLoader = loader.load();
+        Scene secondScene = new Scene(secondSceneLoader);
+
+        DetailedViewController detailedViewController = loader.getController();
+        detailedViewController.getPerson(id,name,address,age,salary);
+
+        //this part gets the stage information
+
+        Stage window = (Stage) ((Node)event.getSource()).getScene().getWindow();
+        window.setScene(secondScene);
+        window.show();
+
+
+
+
+
+
+    }
+
+
+    public void deleteButtonPushed(){
+
+
+
+
+        ObservableList<Person> persons = FXCollections.observableArrayList();
+        try(Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/testt?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", "root", "root")) {
+            Integer idNum = tableView.getSelectionModel().getSelectedItem().getIdNumber();
+
+            Statement stmt = connection.createStatement();
+            stmt.executeUpdate("DELETE FROM persons_new WHERE ID = "+idNum+" ");
+            ResultSet rs = stmt.executeQuery("SELECT * FROM persons_new");
+            while (rs.next()) {
+                Person prs = new Person(rs.getInt("id"),rs.getString("first_name"),rs.getString("address"),rs.getInt("age"),rs.getInt("salary"));
+                persons.add(prs);
+            }
+
+
+
+        }  catch (Exception e) {
+            System.err.println("Got an exception! ");
+            System.err.println(e.getMessage());
+        }
+        tableView.setItems(persons);
+
+
+
+
+    }
+
+
+    public void salaryOverButtonPushed(){
+
+
+        ObservableList<Person> persons = FXCollections.observableArrayList();
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/testt?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", "root", "root")){
+
+            Statement stmt = connection.createStatement();
+
+
+                ResultSet rs = stmt.executeQuery("SELECT * FROM persons_new WHERE salary > 1000");
+                while (rs.next()) {
+                    Person prs = new Person(rs.getInt("id"),rs.getString("first_name"),rs.getString("address"),rs.getInt("age"),rs.getInt("salary"));
+
+                    persons.add(prs);
+                }
+
+
+
+        } catch (Exception e ){
+            System.out.println(e);
+
+        }
+        tableView.setItems(persons);
+        searchDatabase.setText("");
+
+
+    }
+
+
+
+
+
+    public void youngerThanButtonPushed(){
+
+
+        ObservableList<Person> persons = FXCollections.observableArrayList();
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/testt?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", "root", "root")){
+
+            Statement stmt = connection.createStatement();
+
+
+            ResultSet rs = stmt.executeQuery("SELECT * FROM persons_new WHERE age < 25");
+            while (rs.next()) {
+                Person prs = new Person(rs.getInt("id"),rs.getString("first_name"),rs.getString("address"),rs.getInt("age"),rs.getInt("salary"));
+
+                persons.add(prs);
+            }
+
+
+
+        } catch (Exception e ){
+            System.out.println(e);
+
+        }
+        tableView.setItems(persons);
+        searchDatabase.setText("");
+
+
+    }
+
+
+
+
+
+
 
 
 

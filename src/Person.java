@@ -1,3 +1,5 @@
+
+
 public class Person {
 
 
@@ -5,6 +7,10 @@ public class Person {
     private String address;
     private Integer age;
     private Integer salary;
+
+    public Person(String first_name) {
+    this.name = first_name;
+    }
 
     public Integer getIdNumber() {
         return idNumber;

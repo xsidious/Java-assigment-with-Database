@@ -1,4 +1,6 @@
-import com.mysql.cj.protocol.Resultset;
+
+
+//import com.mysql.cj.protocol.Resultset;
 import javafx.application.Platform;
 import javafx.beans.binding.IntegerBinding;
 import javafx.beans.property.ObjectProperty;
@@ -100,7 +102,7 @@ public class firstViewController implements Initializable {
     public void employeesButtonPressed(ActionEvent event) throws IOException {
         Parent secondSceneLoader = FXMLLoader.load(getClass().getResource("secondViewTable.fxml"));
         Scene secondScene = new Scene(secondSceneLoader);
-       // secondScene.getStylesheets().add("JavaFX/style.css");
+        // secondScene.getStylesheets().add("JavaFX/style.css");
         //this part gets the stage information
 
         Stage window = (Stage) ((Node)event.getSource()).getScene().getWindow();
@@ -145,4 +147,7 @@ public class firstViewController implements Initializable {
 
 
 
-    }
+
+
+
+}
